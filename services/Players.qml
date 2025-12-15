@@ -122,5 +122,8 @@ Singleton {
         function stop(): void {
             root.active?.stop();
         }
+        function raise(): void {
+            root.active?.raise();
+        }
     }
 }
