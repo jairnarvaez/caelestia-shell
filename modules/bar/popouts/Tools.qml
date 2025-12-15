@@ -33,6 +33,11 @@ Item {
             icon: "robot",
             name: "Chat IA",
             component: "AI.qml"
+        },
+        {
+            icon: "youtube_activity",
+            name: "Youtube Downloader",
+            component: "YoutubeDowloader.qml"
         }
     ]
 
@@ -84,9 +89,10 @@ Item {
                 anchors.margins: Appearance.padding.normal
                 currentIndex: root.currentIndex
 
-                Translate1 {}
+                TranslatePopout {}
                 ColorPicker {}
                 AI {}
+                YoutubeDowloader {}
             }
         }
     }
