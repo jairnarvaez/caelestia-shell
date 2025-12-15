@@ -70,6 +70,11 @@ Item {
             sourceComponent: Calendar {}
         }
 
+        Popout {
+            name: "tools"
+            sourceComponent: Tools {}
+        }
+
         Repeater {
             model: ScriptModel {
                 values: [...SystemTray.items.values]

@@ -76,6 +76,10 @@ ColumnLayout {
             popouts.currentName = "calendar";
             popouts.currentCenter = item.mapToItem(root, 0, itemHeight / 2).y;
             popouts.hasCurrent = true;
+        } else if (id === "tools") {
+            popouts.currentName = "tools";
+            popouts.currentCenter = item.mapToItem(root, 0, itemHeight / 2).y;
+            popouts.hasCurrent = true;
         }
     }
 
