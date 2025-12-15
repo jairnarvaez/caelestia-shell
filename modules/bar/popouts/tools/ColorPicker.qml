@@ -16,7 +16,7 @@ ColumnLayout {
 
     Text {
         text: "Color Picker"
-        font.pointSize: Appearance.font.size.large
+        font.pointSize: Appearance.font.size.medium
         font.bold: true
         color: Colours.palette.m3onSurface
     }

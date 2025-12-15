@@ -15,7 +15,7 @@ ColumnLayout {
 
     Text {
         text: "Chat con IA"
-        font.pointSize: Appearance.font.size.large
+        font.pointSize: Appearance.font.size.medium
         font.bold: true
         color: Colours.palette.m3onSurface
     }
