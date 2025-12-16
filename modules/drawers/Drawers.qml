@@ -66,7 +66,7 @@ Variants {
             screen: scope.modelData
             name: "drawers"
             WlrLayershell.exclusionMode: ExclusionMode.Ignore
-            WlrLayershell.keyboardFocus: visibilities.launcher || visibilities.session ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+            WlrLayershell.keyboardFocus: visibilities.launcher || visibilities.session || visibilities.popouts ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
 
             mask: Region {
                 x: bar.implicitWidth + win.dragMaskPadding
@@ -109,6 +109,7 @@ Variants {
                     visibilities.session = false;
                     visibilities.sidebar = false;
                     visibilities.dashboard = false;
+                    visibilities.popouts = false;
                     panels.popouts.hasCurrent = false;
                     bar.closeTray();
                 }
@@ -154,6 +155,7 @@ Variants {
                 property bool dashboard
                 property bool utilities
                 property bool sidebar
+                property bool popouts
 
                 Component.onCompleted: Visibilities.load(scope.modelData, this)
             }
