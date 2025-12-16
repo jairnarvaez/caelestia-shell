@@ -16,7 +16,7 @@ Item {
     implicitWidth: layout.implicitWidth
     implicitHeight: layout.implicitHeight
 
-    property int currentIndex: 2
+    property int currentIndex: 0
 
     readonly property var tools: [
         {
@@ -68,7 +68,7 @@ Item {
 
         // Columna de iconos
         ColumnLayout {
-            spacing: Appearance.padding.small
+            spacing: Appearance.padding.scale
 
             Repeater {
                 model: root.tools
@@ -111,7 +111,7 @@ Item {
         // Panel de contenido
         Rectangle {
             Layout.preferredWidth: 350
-            Layout.preferredHeight: 620
+            Layout.preferredHeight: 450
             radius: 12
             color: Colours.palette.m3surface
             border.color: Colours.palette.m3outlineVariant

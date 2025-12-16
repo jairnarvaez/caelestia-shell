@@ -18,8 +18,8 @@ Rectangle {
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: 24
-        spacing: 24
+        //  anchors.margins: 24
+        spacing: 10
 
         // Header
         RowLayout {

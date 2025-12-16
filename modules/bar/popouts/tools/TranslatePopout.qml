@@ -1,5 +1,3 @@
-// ============================================
-// Translate.qml - Material Design 3
 pragma ComponentBehavior: Bound
 import qs.components
 import qs.config
@@ -8,339 +6,423 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 
-Rectangle {
+Item {
     id: root
-    color: Colours.tPalette.m3surface
-    radius: 28
+
+    readonly property int maxCharacters: 500
+    readonly property string defaultOutputPlaceholder: "La traducción aparecerá aquí..."
+
+    QtObject {
+        id: dataModel
+
+        readonly property var languages: [
+            {
+                code: "es",
+                name: "Español"
+            },
+            {
+                code: "en",
+                name: "Inglés"
+            },
+            {
+                code: "fr",
+                name: "Francés"
+            },
+            {
+                code: "de",
+                name: "Alemán"
+            },
+            {
+                code: "it",
+                name: "Italiano"
+            },
+            {
+                code: "pt",
+                name: "Portugués"
+            }
+        ]
+
+        property var languageNames: languages.map(lang => lang.name)
+    }
+
+    QtObject {
+        id: translationLogic
+
+        function swapLanguages() {
+            const temp = fromLang.currentIndex;
+            fromLang.currentIndex = toLang.currentIndex;
+            toLang.currentIndex = temp;
+        }
+
+        function translateText() {
+            if (inputText.text.trim() === "") {
+                return;
+            }
+
+            const fromLangCode = dataModel.languages[fromLang.currentIndex].code;
+            const toLangCode = dataModel.languages[toLang.currentIndex].code;
+
+            // TODO: Integrar con API de traducción real
+            outputText.text = `Traducción de ${fromLangCode} a ${toLangCode}:\n\n${inputText.text}`;
+        }
+
+        function copyToClipboard() {
+            // TODO: Implementar copia al portapapeles
+            console.log("Copiando al portapapeles:", outputText.text);
+        }
+
+        function validateInputLength(text) {
+            if (text.length > root.maxCharacters) {
+                return text.substring(0, root.maxCharacters);
+            }
+            return text;
+        }
+    }
+
+    states: [
+        State {
+            name: "empty"
+            when: inputText.text.trim() === ""
+            PropertyChanges {
+                target: translateButton
+                enabled: false
+                opacity: 0.5
+            }
+        },
+        State {
+            name: "ready"
+            when: inputText.text.trim() !== ""
+            PropertyChanges {
+                target: translateButton
+                enabled: true
+                opacity: 1.0
+            }
+        }
+    ]
+
+    transitions: Transition {
+        PropertyAnimation {
+            properties: "opacity"
+            duration: 200
+            easing.type: Easing.OutCubic
+        }
+    }
 
     ColumnLayout {
         anchors.fill: parent
-        // anchors.margins: 24
-        spacing: 20
+        spacing: Appearance.spacing.larger
 
-        // Header
         RowLayout {
             Layout.fillWidth: true
-            spacing: 12
+            spacing: Appearance.spacing.normal
 
-            Rectangle {
-                width: 40
-                height: 40
-                radius: 20
-                color: Colours.tPalette.m3primaryContainer
+            StyledRect {
+                implicitWidth: implicitHeight
+                implicitHeight: headerIcon.implicitHeight + Appearance.padding.large
+                radius: Appearance.rounding.full
+                color: Colours.palette.m3secondaryContainer
 
                 MaterialIcon {
+                    id: headerIcon
                     anchors.centerIn: parent
                     text: "translate"
-                    font.pointSize: 18
-                    color: Colours.tPalette.m3onPrimaryContainer
+                    color: IdleInhibitor.enabled ? Colours.palette.m3onSecondary : Colours.palette.m3onSecondaryContainer
+                    font.pointSize: Appearance.font.size.large
                 }
             }
 
             Text {
                 text: "Traductor"
-                font.pointSize: Appearance.font.size.large
+                font.pointSize: Appearance.font.size.normal
                 font.weight: Font.Medium
                 color: Colours.tPalette.m3onSurface
                 Layout.fillWidth: true
             }
         }
 
-        // Language Selection Card
         Rectangle {
             Layout.fillWidth: true
-            height: 72
-            radius: 16
-            color: Colours.tPalette.m3surfaceContainerHigh
+            Layout.preferredHeight: childrenRect.height
+            radius: Appearance.rounding.normal
+            color: Colours.tPalette.m3surface
 
             RowLayout {
-                anchors.fill: parent
-                anchors.margins: 16
-                spacing: 8
+                width: parent.width
+                spacing: Appearance.spacing.small
 
                 // From Language
-                Rectangle {
+                LanguageComboBox {
+                    id: fromLang
                     Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    radius: 12
-                    color: Colours.light ? Qt.rgba(0, 0, 0, 0.05) : Qt.rgba(1, 1, 1, 0.05)
-
-                    ComboBox {
-                        id: fromLang
-                        anchors.fill: parent
-                        model: ["Español", "Inglés", "Francés", "Alemán", "Italiano", "Portugués"]
-                        currentIndex: 0
-
-                        background: Rectangle {
-                            color: "transparent"
-                            radius: 12
-                        }
-
-                        contentItem: Text {
-                            text: fromLang.displayText
-                            font.pointSize: Appearance.font.size.normal
-                            font.weight: Font.Medium
-                            color: Colours.tPalette.m3onSurface
-                            verticalAlignment: Text.AlignVCenter
-                            leftPadding: 16
-                        }
-                    }
+                    model: dataModel.languageNames
+                    currentIndex: 0
                 }
 
                 // Swap Button
-                Rectangle {
-                    width: 40
-                    height: 40
-                    radius: 20
-                    color: swapArea.containsMouse ? Colours.tPalette.m3secondaryContainer : "transparent"
-
-                    Behavior on color {
-                        ColorAnimation {
-                            duration: 200
-                            easing.type: Easing.OutCubic
-                        }
+                IconButton {
+                    id: swapButton
+                    iconText: "swap_horiz"
+                    iconSize: Appearance.font.size.large
+                    onClicked: {
+                        swapAnimation.start();
+                        translationLogic.swapLanguages();
                     }
 
-                    MaterialIcon {
-                        anchors.centerIn: parent
-                        text: "swap_horiz"
-                        font.pointSize: 20
-                        color: Colours.tPalette.m3onSurfaceVariant
-
-                        RotationAnimator on rotation {
-                            id: swapAnimation
-                            from: 0
-                            to: 180
-                            duration: 300
-                            running: false
-                            easing.type: Easing.OutBack
-                        }
-                    }
-
-                    MouseArea {
-                        id: swapArea
-                        anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
-                        hoverEnabled: true
-                        onClicked: {
-                            swapAnimation.start();
-                            const temp = fromLang.currentIndex;
-                            fromLang.currentIndex = toLang.currentIndex;
-                            toLang.currentIndex = temp;
-                        }
+                    RotationAnimator on rotation {
+                        id: swapAnimation
+                        from: 0
+                        to: 180
+                        duration: 300
+                        running: false
+                        easing.type: Easing.OutBack
                     }
                 }
 
                 // To Language
-                Rectangle {
+                LanguageComboBox {
+                    id: toLang
                     Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    radius: 12
-                    color: Colours.light ? Qt.rgba(0, 0, 0, 0.05) : Qt.rgba(1, 1, 1, 0.05)
-
-                    ComboBox {
-                        id: toLang
-                        anchors.fill: parent
-                        model: ["Inglés", "Español", "Francés", "Alemán", "Italiano", "Portugués"]
-                        currentIndex: 0
-
-                        background: Rectangle {
-                            color: "transparent"
-                            radius: 12
-                        }
-
-                        contentItem: Text {
-                            text: toLang.displayText
-                            font.pointSize: Appearance.font.size.normal
-                            font.weight: Font.Medium
-                            color: Colours.tPalette.m3onSurface
-                            verticalAlignment: Text.AlignVCenter
-                            leftPadding: 16
-                        }
-                    }
+                    model: dataModel.languageNames
+                    currentIndex: 1
                 }
             }
         }
 
-        // Input Card
-        Rectangle {
+        TranslationTextCard {
+            id: inputCard
             Layout.fillWidth: true
-            Layout.preferredHeight: 140
-            radius: 16
-            color: Colours.tPalette.m3surfaceContainerHighest
-            border.width: inputText.activeFocus ? 2 : 0
-            border.color: Colours.tPalette.m3primary
+            Layout.fillHeight: true
+            Layout.minimumHeight: 120
 
-            Behavior on border.width {
-                NumberAnimation {
-                    duration: 150
-                    easing.type: Easing.OutCubic
-                }
+            titleText: "Texto original"
+            showCounter: true
+            counterText: inputText.length + " / " + root.maxCharacters
+            placeholderText: "Escribe o pega el texto aquí..."
+            textContent: inputText.text
+
+            onTextChanged: function (newText) {
+                inputText.text = translationLogic.validateInputLength(newText);
             }
 
-            ColumnLayout {
-                anchors.fill: parent
-                anchors.margins: 16
-                spacing: 8
-
-                RowLayout {
-                    Layout.fillWidth: true
-
-                    Text {
-                        text: "Texto original"
-                        font.pointSize: Appearance.font.size.small
-                        font.weight: Font.Medium
-                        color: Colours.tPalette.m3onSurfaceVariant
-                        Layout.fillWidth: true
-                    }
-
-                    Text {
-                        text: inputText.length + " / 500"
-                        font.pointSize: Appearance.font.size.small
-                        color: Colours.tPalette.m3onSurfaceVariant
-                        opacity: 0.7
-                    }
-                }
-
-                ScrollView {
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-
-                    TextArea {
-                        id: inputText
-                        placeholderText: "Escribe o pega el texto aquí..."
-                        wrapMode: TextArea.Wrap
-                        color: Colours.tPalette.m3onSurface
-                        font.pointSize: Appearance.font.size.normal
-                        selectByMouse: true
-
-                        background: Rectangle {
-                            color: "transparent"
-                        }
-                    }
-                }
+            TextArea {
+                id: inputText
+                visible: false
             }
         }
 
-        // Translate Button
-        Rectangle {
+        StyledRect {
+            id: translateButton
             Layout.fillWidth: true
-            Layout.preferredHeight: 48
-            radius: 24
-            color: btnArea.containsMouse ? Qt.lighter(Colours.tPalette.m3primary, 1.1) : Colours.tPalette.m3primary
-            opacity: inputText.text.trim() !== "" ? 1 : 0.38
+            Layout.maximumWidth: translateBtnContent.implicitWidth + Appearance.padding.large * 10
+            Layout.alignment: Qt.AlignHCenter
+            implicitHeight: translateBtnContent.implicitHeight + Appearance.padding.small
+            radius: Appearance.rounding.normal
+            color: Colours.palette.m3primaryContainer
 
-            Behavior on color {
-                ColorAnimation {
-                    duration: 150
-                    easing.type: Easing.OutCubic
-                }
-            }
-
-            Behavior on opacity {
-                NumberAnimation {
-                    duration: 150
-                }
+            StateLayer {
+                color: Colours.palette.m3onPrimaryContainer
             }
 
             RowLayout {
+                id: translateBtnContent
                 anchors.centerIn: parent
-                spacing: 8
+                spacing: Appearance.spacing.small
 
                 MaterialIcon {
                     text: "g_translate"
-                    font.pointSize: 18
-                    color: Colours.tPalette.m3onPrimary
+                    font.pointSize: Appearance.font.size.large
+                    color: Colours.palette.m3onPrimaryContainer
                 }
 
-                Text {
-                    text: "Traducir"
-                    font.pointSize: Appearance.font.size.normal
-                    font.weight: Font.Medium
-                    color: Colours.tPalette.m3onPrimary
+                StyledText {
+                    text: qsTr("Traducir")
+                    font.pointSize: Appearance.font.size.small
+                    color: Colours.palette.m3onPrimaryContainer
                 }
             }
 
             MouseArea {
-                id: btnArea
                 anchors.fill: parent
                 cursorShape: Qt.PointingHandCursor
                 hoverEnabled: true
-                enabled: inputText.text.trim() !== ""
-                onClicked: {
-                    outputText.text = "Traducción simulada:\n\n" + inputText.text;
-                }
+                enabled: translateButton.enabled
+                onClicked: translationLogic.translateText()
+
+                Accessible.role: Accessible.Button
+                Accessible.name: "Traducir texto"
+                Accessible.description: "Traduce el texto ingresado al idioma seleccionado"
             }
         }
 
-        // Output Card
-        Rectangle {
+        TranslationTextCard {
+            id: outputCard
             Layout.fillWidth: true
-            Layout.preferredHeight: 140
-            radius: 16
-            color: Colours.tPalette.m3surfaceContainer
+            Layout.fillHeight: true
+            Layout.minimumHeight: 120
 
-            ColumnLayout {
-                anchors.fill: parent
-                anchors.margins: 16
-                spacing: 8
+            titleText: "Traducción"
+            showCounter: false
+            showCopyButton: outputText.text !== "" && outputText.text !== root.defaultOutputPlaceholder
+            placeholderText: root.defaultOutputPlaceholder
+            textContent: outputText.text
+            isReadOnly: false
 
-                RowLayout {
-                    Layout.fillWidth: true
+            onCopyClicked: translationLogic.copyToClipboard()
+            onTextChanged: function (newText) {
+                outputText.text = newText;
+            }
 
-                    Text {
-                        text: "Traducción"
-                        font.pointSize: Appearance.font.size.small
-                        font.weight: Font.Medium
-                        color: Colours.tPalette.m3onSurfaceVariant
-                        Layout.fillWidth: true
-                    }
+            TextArea {
+                id: outputText
+                visible: false
+            }
+        }
+    }
 
-                    // Copy Button
-                    Rectangle {
-                        width: 32
-                        height: 32
-                        radius: 16
-                        color: copyArea.containsMouse ? Colours.tPalette.m3secondaryContainer : "transparent"
-                        visible: outputText.text !== "La traducción aparecerá aquí..."
+    component LanguageComboBox: Rectangle {
+        id: langCombo
+        property alias model: combo.model
+        property alias currentIndex: combo.currentIndex
 
-                        MaterialIcon {
-                            anchors.centerIn: parent
-                            text: "content_copy"
-                            font.pointSize: 16
-                            color: Colours.tPalette.m3onSurfaceVariant
-                        }
+        Layout.preferredHeight: combo.implicitHeight + Appearance.spacing.large
+        radius: Appearance.rounding.small
+        color: Colours.light ? Qt.rgba(0, 0, 0, 0.05) : Qt.rgba(1, 1, 1, 0.05)
 
-                        MouseArea {
-                            id: copyArea
-                            anchors.fill: parent
-                            cursorShape: Qt.PointingHandCursor
-                            hoverEnabled: true
-                            onClicked:
-                            // Aquí iría la lógica de copiar al portapapeles
-                            {}
-                        }
-                    }
-                }
+        ComboBox {
+            id: combo
+            anchors.fill: parent
 
-                ScrollView {
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
+            background: Rectangle {
+                color: "transparent"
+                radius: Appearance.rounding.small
+            }
 
-                    Text {
-                        id: outputText
-                        text: "La traducción aparecerá aquí..."
-                        wrapMode: Text.Wrap
-                        color: outputText.text === "La traducción aparecerá aquí..." ? Colours.tPalette.m3onSurfaceVariant : Colours.tPalette.m3onSurface
-                        font.pointSize: Appearance.font.size.normal
-                        opacity: outputText.text === "La traducción aparecerá aquí..." ? 0.6 : 1
-                    }
-                }
+            contentItem: Text {
+                text: combo.displayText
+                font.pointSize: Appearance.font.size.small
+                color: Colours.tPalette.m3onSurface
+                verticalAlignment: Text.AlignVCenter
+                leftPadding: Appearance.padding.normal
+            }
+        }
+    }
+
+    component IconButton: Rectangle {
+        id: iconBtn
+
+        property string iconText: ""
+        property int iconSize: Appearance.font.size.large
+        property alias rotation: icon.rotation
+        signal clicked
+
+        implicitWidth: implicitHeight
+        implicitHeight: icon.implicitHeight + Appearance.padding.smaller * 2
+        radius: Appearance.rounding.full
+        color: mouseArea.containsMouse ? Colours.tPalette.m3secondaryContainer : "transparent"
+
+        Behavior on color {
+            ColorAnimation {
+                duration: 200
+                easing.type: Easing.OutCubic
             }
         }
 
-        Item {
-            Layout.fillHeight: true
+        MaterialIcon {
+            id: icon
+            anchors.centerIn: parent
+            text: iconBtn.iconText
+            font.pointSize: iconBtn.iconSize
+            color: Colours.tPalette.m3onSurfaceVariant
+        }
+
+        MouseArea {
+            id: mouseArea
+            anchors.fill: parent
+            cursorShape: Qt.PointingHandCursor
+            hoverEnabled: true
+            onClicked: iconBtn.clicked()
+        }
+    }
+
+    component TranslationTextCard: Rectangle {
+        id: card
+
+        property string titleText: ""
+        property bool showCounter: false
+        property string counterText: ""
+        property bool showCopyButton: false
+        property string placeholderText: ""
+        property string textContent: ""
+        property bool isReadOnly: false
+
+        signal copyClicked
+        signal textChanged(string newText)
+
+        radius: Appearance.rounding.small
+        color: Colours.tPalette.m3surfaceContainerHighest
+        border.width: textArea.activeFocus ? 2 : 0
+        border.color: Colours.tPalette.m3primary
+
+        Behavior on border.width {
+            NumberAnimation {
+                duration: 150
+                easing.type: Easing.OutCubic
+            }
+        }
+
+        ColumnLayout {
+            anchors.fill: parent
+            anchors.margins: Appearance.padding.large
+            spacing: Appearance.spacing.small
+
+            RowLayout {
+                Layout.fillWidth: true
+
+                Text {
+                    text: card.titleText
+                    font.pointSize: Appearance.font.size.small
+                    font.weight: Font.Medium
+                    color: Colours.tPalette.m3onSurfaceVariant
+                    Layout.fillWidth: true
+                }
+
+                Text {
+                    visible: card.showCounter
+                    text: card.counterText
+                    font.pointSize: Appearance.font.size.small
+                    color: Colours.tPalette.m3onSurfaceVariant
+                    opacity: 0.7
+                }
+
+                IconButton {
+                    visible: card.showCopyButton
+                    iconText: "content_copy"
+                    iconSize: Appearance.font.size.larger
+                    onClicked: card.copyClicked()
+                }
+            }
+
+            ScrollView {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+
+                TextArea {
+                    id: textArea
+                    text: card.textContent
+                    placeholderText: card.placeholderText
+                    wrapMode: TextArea.Wrap
+                    color: Colours.tPalette.m3onSurface
+                    font.pointSize: Appearance.font.size.small
+                    selectByMouse: true
+                    readOnly: card.isReadOnly
+
+                    onTextChanged: card.textChanged(text)
+
+                    background: Rectangle {
+                        color: "transparent"
+                    }
+                }
+            }
         }
     }
 }
