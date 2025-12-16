@@ -57,6 +57,7 @@ CustomMouseArea {
     onContainsMouseChanged: {
         if (!containsMouse) {
             // Only hide if not activated by shortcut
+
             if (!osdShortcutActive) {
                 visibilities.osd = false;
                 root.panels.osd.hovered = false;
@@ -67,6 +68,11 @@ CustomMouseArea {
 
             if (!utilitiesShortcutActive)
                 visibilities.utilities = false;
+
+            if (popouts.currentName.startsWith("tools")) {
+                popouts.hasCurrent = false;
+                popouts.currentName = "";
+            }
 
             if (!popouts.currentName.startsWith("traymenu") || (popouts.current?.depth ?? 0) <= 1) {
                 popouts.hasCurrent = false;

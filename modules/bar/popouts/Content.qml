@@ -72,7 +72,9 @@ Item {
 
         Popout {
             name: "tools"
-            sourceComponent: Tools {}
+            sourceComponent: Tools {
+                currentIndex: shouldBeActive ? currentIndex : -1
+            }
         }
 
         Repeater {
