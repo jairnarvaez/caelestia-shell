@@ -16,7 +16,7 @@ Item {
     implicitWidth: layout.implicitWidth
     implicitHeight: layout.implicitHeight
 
-    property int currentIndex: -1
+    property int currentIndex: 2
 
     readonly property var tools: [
         {
@@ -45,6 +45,27 @@ Item {
         id: layout
         spacing: Appearance.padding.normal
 
+        Rectangle {
+            Layout.fillHeight: true
+            Layout.preferredWidth: root.currentIndex == -1 ? 1 : 0
+            color: Colours.palette.m3outlineVariant
+            radius: 1
+            gradient: Gradient {
+                GradientStop {
+                    position: 0
+                    color: "transparent"
+                }
+                GradientStop {
+                    position: 0.5
+                    color: Colours.palette.m3outlineVariant
+                }
+                GradientStop {
+                    position: 1.0
+                    color: "transparent"
+                }
+            }
+        }
+
         // Columna de iconos
         ColumnLayout {
             spacing: Appearance.padding.small
@@ -66,14 +87,35 @@ Item {
             }
         }
 
+        Rectangle {
+            Layout.fillHeight: true
+            Layout.preferredWidth: root.currentIndex == -1 ? 0 : 1
+            color: Colours.palette.m3outlineVariant
+            radius: 1
+            gradient: Gradient {
+                GradientStop {
+                    position: 0//root.currentIndex == -1 ? 0.0 : 0.25
+                    color: "transparent"
+                }
+                GradientStop {
+                    position: 0.5
+                    color: Colours.palette.m3outlineVariant
+                }
+                GradientStop {
+                    position: 1.0//root.currentIndex == -1 ? 1.0 : 0.75
+                    color: "transparent"
+                }
+            }
+        }
+
         // Panel de contenido
         Rectangle {
             Layout.preferredWidth: 350
-            Layout.preferredHeight: 400
+            Layout.preferredHeight: 620
             radius: 12
             color: Colours.palette.m3surface
-            border.color: Colours.palette.m3outline
-            border.width: 1
+            border.color: Colours.palette.m3outlineVariant
+            border.width: 0
             visible: root.currentIndex >= 0
 
             clip: true

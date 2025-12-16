@@ -10,6 +10,6 @@ MaterialIcon {
 
     anchors.centerIn: parent
 
-    text: "select_window"
+    text: "home_repair_service"
     color: Colours.palette.m3secondary
 }

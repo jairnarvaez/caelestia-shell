@@ -69,10 +69,10 @@ CustomMouseArea {
             if (!utilitiesShortcutActive)
                 visibilities.utilities = false;
 
-            if (popouts.currentName.startsWith("tools")) {
-                popouts.hasCurrent = false;
-                popouts.currentName = "";
-            }
+            // if (popouts.currentName.startsWith("tools")) {
+            //     popouts.hasCurrent = false;
+            //     popouts.currentName = "";
+            // }
 
             if (!popouts.currentName.startsWith("traymenu") || (popouts.current?.depth ?? 0) <= 1) {
                 popouts.hasCurrent = false;
