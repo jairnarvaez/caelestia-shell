@@ -17,6 +17,9 @@ Item {
 
     property bool showMenu: false
 
+    property string fromLanguageSelected: fromLang.selectedLanguage === "" ? dataModel.languages[0].name : fromLang.selectedLanguage
+    property string toLanguageSelected: toLang.selectedLanguage === "" ? dataModel.languages[1].name : toLang.selectedLanguage
+
     QtObject {
         id: dataModel
 
@@ -36,52 +39,42 @@ Item {
             {
                 code: "de",
                 name: "Alemán"
-            },
-            {
-                code: "it",
-                name: "Italiano"
-            },
-            {
-                code: "pt",
-                name: "Portugués"
             }
         ]
 
         property var languageNames: languages.map(lang => lang.name)
     }
 
-    QtObject {
-        id: translationLogic
+    function swapLanguages() {
+        const temp = root.fromLanguageSelected;
+        console.log(root.fromLanguageSelected);
+        console.log(root.toLanguageSelected);
+        fromLang.setLanguageByText(root.toLanguageSelected);
+        toLang.setLanguageByText(temp);
+    }
 
-        function swapLanguages() {
-            const temp = fromLang.currentIndex;
-            fromLang.currentIndex = toLang.currentIndex;
-            toLang.currentIndex = temp;
+    function translateText() {
+        if (inputText.text.trim() === "") {
+            return;
         }
 
-        function translateText() {
-            if (inputText.text.trim() === "") {
-                return;
-            }
+        const fromLangCode = dataModel.languages[fromLang.currentIndex].code;
+        const toLangCode = dataModel.languages[toLang.currentIndex].code;
 
-            const fromLangCode = dataModel.languages[fromLang.currentIndex].code;
-            const toLangCode = dataModel.languages[toLang.currentIndex].code;
+        // TODO: Integrar con API de traducción real
+        outputText.text = `Traducción de ${fromLangCode} a ${toLangCode}:\n\n${inputText.text}`;
+    }
 
-            // TODO: Integrar con API de traducción real
-            outputText.text = `Traducción de ${fromLangCode} a ${toLangCode}:\n\n${inputText.text}`;
+    function copyToClipboard() {
+        // TODO: Implementar copia al portapapeles
+        console.log("Copiando al portapapeles:", outputText.text);
+    }
+
+    function validateInputLength(text) {
+        if (text.length > root.maxCharacters) {
+            return text.substring(0, root.maxCharacters);
         }
-
-        function copyToClipboard() {
-            // TODO: Implementar copia al portapapeles
-            console.log("Copiando al portapapeles:", outputText.text);
-        }
-
-        function validateInputLength(text) {
-            if (text.length > root.maxCharacters) {
-                return text.substring(0, root.maxCharacters);
-            }
-            return text;
-        }
+        return text;
     }
 
     states: [
@@ -160,6 +153,7 @@ Item {
                 LanguageComboBox {
                     id: fromLang
                     Layout.fillWidth: true
+                    selectedLanguageDefault: 0
                 }
 
                 // Swap Button
@@ -169,7 +163,7 @@ Item {
                     iconSize: Appearance.font.size.large
                     onClicked: {
                         swapAnimation.start();
-                        translationLogic.swapLanguages();
+                        root.swapLanguages();
                     }
 
                     RotationAnimator on rotation {
@@ -186,6 +180,7 @@ Item {
                 LanguageComboBox {
                     id: toLang
                     Layout.fillWidth: true
+                    selectedLanguageDefault: 1
                 }
             }
         }
@@ -285,15 +280,8 @@ Item {
         Layout.fillWidth: true
         Layout.preferredHeight: comboButton.height
 
-        MouseArea {
-            parent: root
-            anchors.fill: parent
-            visible: languageMenu.expanded
-            z: 9998
-            onClicked: {
-                languageMenu.expanded = false;
-            }
-        }
+        property string selectedLanguage
+        required property int selectedLanguageDefault
 
         // Botón tipo combobox
         StyledRect {
@@ -352,6 +340,10 @@ Item {
             }
         }
 
+        function setLanguageByText(text) {
+            languageMenu.setLanguageByText(text);
+        }
+
         // Menú desplegable
         Menu {
             id: languageMenu
@@ -360,8 +352,29 @@ Item {
             anchors.topMargin: Appearance.spacing.small
             width: comboButton.width
             items: languageVariants.instances
-            active: languageVariants.instances.length > 0 ? languageVariants.instances[0] : null
+            active: languageVariants.instances.length > 0 ? languageVariants.instances[selectedLanguageDefault] : null
             expanded: root.showMenu
+
+            onItemSelected: function (item) {
+                languageSelector.selectedLanguage = item.text;
+            }
+
+            function findItemByText(text) {
+                for (let i = 0; i < languageVariants.instances.length; i++) {
+                    if (languageVariants.instances[i].text === text) {
+                        return i;
+                    }
+                }
+                return -1;
+            }
+
+            function setLanguageByText(text) {
+                const foundItem = findItemByText(text);
+                if (foundItem >= 0) {
+                    languageMenu.active = languageVariants.instances[foundItem];
+                    languageSelector.selectedLanguage = languageVariants.instances[foundItem].text;
+                }
+            }
 
             Variants {
                 id: languageVariants
