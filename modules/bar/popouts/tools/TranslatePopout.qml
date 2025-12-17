@@ -5,12 +5,17 @@ import qs.services
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
+import Quickshell
+import Quickshell.Widgets
+import qs.components.controls
 
 Item {
     id: root
 
     readonly property int maxCharacters: 500
     readonly property string defaultOutputPlaceholder: "La traducción aparecerá aquí..."
+
+    property bool showMenu: false
 
     QtObject {
         id: dataModel
@@ -145,6 +150,7 @@ Item {
             Layout.preferredHeight: childrenRect.height
             radius: Appearance.rounding.normal
             color: Colours.tPalette.m3surface
+            z: 100
 
             RowLayout {
                 width: parent.width
@@ -154,8 +160,6 @@ Item {
                 LanguageComboBox {
                     id: fromLang
                     Layout.fillWidth: true
-                    model: dataModel.languageNames
-                    currentIndex: 0
                 }
 
                 // Swap Button
@@ -182,8 +186,6 @@ Item {
                 LanguageComboBox {
                     id: toLang
                     Layout.fillWidth: true
-                    model: dataModel.languageNames
-                    currentIndex: 1
                 }
             }
         }
@@ -209,7 +211,6 @@ Item {
                 visible: false
             }
         }
-
         StyledRect {
             id: translateButton
             Layout.fillWidth: true
@@ -279,30 +280,87 @@ Item {
         }
     }
 
-    component LanguageComboBox: Rectangle {
-        id: langCombo
-        property alias model: combo.model
-        property alias currentIndex: combo.currentIndex
+    component LanguageComboBox: Item {
+        id: languageSelector
+        Layout.fillWidth: true
+        Layout.preferredHeight: comboButton.height
+        // Botón tipo combobox
+        StyledRect {
+            id: comboButton
+            anchors.left: parent.left
+            anchors.right: parent.right
+            height: texto.implicitHeight + Appearance.spacing.large
+            radius: Appearance.rounding.small
+            color: Colours.light ? Qt.rgba(0, 0, 0, 0.05) : Qt.rgba(1, 1, 1, 0.05)
 
-        Layout.preferredHeight: combo.implicitHeight + Appearance.spacing.large
-        radius: Appearance.rounding.small
-        color: Colours.light ? Qt.rgba(0, 0, 0, 0.05) : Qt.rgba(1, 1, 1, 0.05)
+            Row {
+                anchors.fill: parent
+                anchors.leftMargin: Appearance.spacing.normal
+                anchors.rightMargin: Appearance.spacing.normal
+                spacing: Appearance.spacing.small
 
-        ComboBox {
-            id: combo
-            anchors.fill: parent
+                StyledText {
+                    id: texto
+                    text: languageMenu.active ? languageMenu.active.text : ""
+                    anchors.verticalCenter: parent.verticalCenter
 
-            background: Rectangle {
-                color: "transparent"
-                radius: Appearance.rounding.small
+                    font.pointSize: Appearance.font.size.small
+                    width: parent.width - arrow.width - parent.spacing
+                }
+
+                Item {
+                    id: arrow
+                    width: 16
+                    height: 16
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    MaterialIcon {
+                        anchors.centerIn: parent
+                        text: "keyboard_arrow_down"
+                        font.pointSize: Appearance.font.size.normal
+                        color: texto.color
+                        rotation: languageMenu.expanded ? 180 : 0
+
+                        Behavior on rotation {
+                            NumberAnimation {
+                                duration: 150
+                                easing.type: Easing.InOutQuad
+                            }
+                        }
+                    }
+                }
             }
 
-            contentItem: Text {
-                text: combo.displayText
-                font.pointSize: Appearance.font.size.small
-                color: Colours.tPalette.m3onSurface
-                verticalAlignment: Text.AlignVCenter
-                leftPadding: Appearance.padding.normal
+            MouseArea {
+                anchors.fill: parent
+                cursorShape: Qt.PointingHandCursor  // Cambia el cursor a mano
+                hoverEnabled: true
+                onClicked: {
+                    languageMenu.expanded = !languageMenu.expanded;
+                }
+            }
+        }
+
+        // Menú desplegable
+        Menu {
+            id: languageMenu
+            anchors.top: comboButton.bottom
+            anchors.left: comboButton.left
+            anchors.topMargin: Appearance.spacing.small
+            width: comboButton.width
+            items: languageVariants.instances
+            active: languageVariants.instances.length > 0 ? languageVariants.instances[0] : null
+            expanded: root.showMenu
+
+            Variants {
+                id: languageVariants
+                model: dataModel.languages
+
+                MenuItem {
+                    required property var modelData
+                    text: modelData.name
+                    icon: "language"
+                }
             }
         }
     }
