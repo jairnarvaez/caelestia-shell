@@ -28,6 +28,10 @@ Item {
         content.item?.checkPopout(y);
     }
 
+    function openPopout(popout: string): void {
+        content.item?.openPopout(popout);
+    }
+
     function handleWheel(y: real, angleDelta: point): void {
         content.item?.handleWheel(y, angleDelta);
     }

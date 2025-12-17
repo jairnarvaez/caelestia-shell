@@ -83,12 +83,16 @@ Scope {
             }
         }
 
+        function openPopout(popout: string): void {
+            const bar = [...Visibilities.bars.values()][0];
+            bar.openPopout(popout);
+        }
+
         function list(): string {
             const visibilities = Visibilities.getForActive();
             return Object.keys(visibilities).filter(k => typeof visibilities[k] === "boolean").join("\n");
         }
     }
-
     IpcHandler {
         target: "controlCenter"
 

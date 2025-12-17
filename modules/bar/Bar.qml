@@ -84,6 +84,19 @@ ColumnLayout {
         }
     }
 
+    function openPopout(popout: string) {
+        popouts.currentName = popout;
+        popouts.hasCurrent = !popouts.hasCurrent;
+        visibilities.popouts = !visibilities.popouts;
+
+        for (const child of children) {
+            if (child.id === popout) {
+                console.log(child.id);
+                popouts.currentCenter = child.item.mapToItem(root, 0, child.item.implicitHeight / 2).y;
+            }
+        }
+    }
+
     function handleWheel(y: real, angleDelta: point): void {
         const ch = childAt(width / 2, y) as WrappedLoader;
         if (ch?.id === "workspaces" && Config.bar.scrollActions.workspaces) {
