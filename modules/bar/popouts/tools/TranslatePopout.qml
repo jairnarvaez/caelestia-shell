@@ -284,6 +284,17 @@ Item {
         id: languageSelector
         Layout.fillWidth: true
         Layout.preferredHeight: comboButton.height
+
+        MouseArea {
+            parent: root
+            anchors.fill: parent
+            visible: languageMenu.expanded
+            z: 9998
+            onClicked: {
+                languageMenu.expanded = false;
+            }
+        }
+
         // Botón tipo combobox
         StyledRect {
             id: comboButton
