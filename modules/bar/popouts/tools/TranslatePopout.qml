@@ -3,12 +3,14 @@ import qs.components
 import qs.config
 import qs.services
 import QtQuick
+import Quickshell.Io
 import QtQuick.Layouts
 import QtQuick.Controls
 import Quickshell
 import Quickshell.Widgets
 import qs.components.controls
 import qs.modules.bar.components.translate
+import qs.modules.bar.services
 
 Item {
     id: root
@@ -38,6 +40,10 @@ Item {
                 name: "Francés"
             },
             {
+                code: "ru",
+                name: "Ruso"
+            },
+            {
                 code: "de",
                 name: "Alemán"
             }
@@ -55,32 +61,29 @@ Item {
         }
     }
 
-    QtObject {
+    TranslationLogic {
         id: translationLogic
 
-        function swapLanguages() {
-            const tempLanguage = root.fromLanguageSelected;
-            languageSelector.fromLang.setLanguageByText(root.toLanguageSelected);
-            languageSelector.toLang.setLanguageByText(tempLanguage);
-        }
-        function translateText() {
-            const text = inputText.text.trim();
-            if (text === "")
-                return;
+        // Establecer referencias
+        dataModel: dataModel
+        languageSelector: languageSelector
+        inputText: inputText
+        outputText: outputText
+        root: root
 
-            const fromCode = dataModel.languages[languageSelector.fromLang.currentIndex].code;
-            const toCode = dataModel.languages[languageSelector.toLang.currentIndex].code;
-
-            outputText.text = `Traducción de ${fromCode} a ${toCode}:\n\n${text}`;
+        onTranslationStarted: {
+            console.log("Iniciando traducción...");
+            // Opcionalmente mostrar un indicador de carga
         }
 
-        function copyToClipboard() {
-            // TODO: Implementar copia al portapapeles
-            console.log("Copiando al portapapeles:", outputText.text);
+        onTranslationCompleted: function (translatedText) {
+            console.log("Traducción completada:", translatedText);
+        // Opcionalmente mostrar notificación de éxito
         }
 
-        function validateInputLength(text) {
-            return text.length > root.maxCharacters ? text.substring(0, root.maxCharacters) : text;
+        onTranslationFailed: function (errorMessage) {
+            console.error("Error:", errorMessage);
+        // Opcionalmente mostrar notificación de error
         }
     }
 
