@@ -90,6 +90,7 @@ Item {
         id: popouts
 
         screen: root.screen
+        visibilities: root.visibilities
 
         x: isDetached ? (root.width - nonAnimWidth) / 2 : 0
         y: {

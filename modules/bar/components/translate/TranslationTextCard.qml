@@ -19,6 +19,10 @@ Rectangle {
     signal copyClicked
     signal textChanged(string newText)
 
+    function focusTextArea() {
+        textArea.forceActiveFocus();
+    }
+
     radius: Appearance.rounding.small
     color: Colours.tPalette.m3surfaceContainerHighest
     border.width: textArea.activeFocus ? 2 : 0

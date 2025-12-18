@@ -149,6 +149,12 @@ Item {
                 inputText.text = translationLogic.validateInputLength(newText);
             }
 
+            Component.onCompleted: {
+                // Acceder al TextArea interno del componente
+                // Necesitas exponer una forma de acceder a él
+                inputCard.focusTextArea();
+            }
+
             TextArea {
                 id: inputText
                 visible: false

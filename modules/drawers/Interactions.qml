@@ -17,6 +17,7 @@ CustomMouseArea {
     property bool dashboardShortcutActive
     property bool osdShortcutActive
     property bool utilitiesShortcutActive
+    property bool popotsShortcutActive
 
     function withinPanelHeight(panel: Item, x: real, y: real): bool {
         const panelY = Config.border.thickness + panel.y;
@@ -66,6 +67,9 @@ CustomMouseArea {
             if (!dashboardShortcutActive)
                 visibilities.dashboard = false;
 
+            if (!popotsShortcutActive)
+                visibilities.popouts = false;
+
             if (!utilitiesShortcutActive)
                 visibilities.utilities = false;
 
@@ -75,8 +79,11 @@ CustomMouseArea {
             // }
 
             if (!popouts.currentName.startsWith("traymenu") || (popouts.current?.depth ?? 0) <= 1) {
-                popouts.hasCurrent = false;
-                bar.closeTray();
+                console.log(popotsShortcutActive);
+                if (!popotsShortcutActive) {
+                    popouts.hasCurrent = false;
+                    bar.closeTray();
+                }
             }
 
             if (Config.bar.showOnHover)
@@ -204,12 +211,26 @@ CustomMouseArea {
             utilitiesShortcutActive = false;
         }
 
+        const showPopout = inLeftPanel(panels.popouts, x, y);
+
+        if (!popotsShortcutActive) {
+            visibilities.popouts = showPopout;
+        } else if (showPopout) {
+            popotsShortcutActive = true;
+        }
+
+        if (popotsShortcutActive && showPopout) {
+            popotsShortcutActive = false;
+        }
+
         // Show popouts on hover
         if (x < bar.implicitWidth) {
             bar.checkPopout(y);
-        } else if ((!popouts.currentName.startsWith("traymenu") || (popouts.current?.depth ?? 0) <= 1) && !inLeftPanel(panels.popouts, x, y)) {
-            popouts.hasCurrent = false;
-            bar.closeTray();
+        } else if ((!popouts.currentName.startsWith("traymenu") || (popouts.current?.depth ?? 0) <= 1) && (!inLeftPanel(panels.popouts, x, y))) {
+            if (!popotsShortcutActive) {
+                popouts.hasCurrent = false;
+                bar.closeTray();
+            }
         }
     }
 
@@ -235,6 +256,20 @@ CustomMouseArea {
                     root.visibilities.osd = false;
                     root.panels.osd.hovered = false;
                 }
+            }
+        }
+
+        function onPopoutsChanged() {
+            if (root.visibilities.popouts) {
+                console.log("visibilities popouts true");
+
+                if (!root.inLeftPanel(root.panels.popouts, root.mouseX, root.mouseY) && root.mouseX > bar.implicitWidth) {
+                    console.log("Es un shortcut");
+                    root.popotsShortcutActive = true;
+                }
+            } else {
+                console.log("visibilities.popouts false");
+                root.popotsShortcutActive = false;
             }
         }
 

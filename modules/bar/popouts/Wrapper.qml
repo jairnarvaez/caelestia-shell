@@ -14,6 +14,7 @@ Item {
     id: root
 
     required property ShellScreen screen
+    required property PersistentProperties visibilities
 
     readonly property real nonAnimWidth: x > 0 || hasCurrent ? children.find(c => c.shouldBeActive)?.implicitWidth ?? content.implicitWidth : 0
     readonly property real nonAnimHeight: children.find(c => c.shouldBeActive)?.implicitHeight ?? content.implicitHeight
@@ -55,7 +56,10 @@ Item {
     implicitWidth: nonAnimWidth
     implicitHeight: nonAnimHeight
 
-    Keys.onEscapePressed: close()
+    Keys.onEscapePressed: {
+        close();
+        visibilities.popouts = false;
+    }
 
     HyprlandFocusGrab {
         active: root.isDetached

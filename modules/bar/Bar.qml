@@ -86,8 +86,8 @@ ColumnLayout {
 
     function openPopout(popout: string) {
         popouts.currentName = popout;
-        popouts.hasCurrent = !popouts.hasCurrent;
-        visibilities.popouts = !visibilities.popouts;
+        popouts.hasCurrent = true;
+        visibilities.popouts = true;
 
         for (const child of children) {
             if (child.id === popout) {
