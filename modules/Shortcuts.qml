@@ -83,9 +83,9 @@ Scope {
             }
         }
 
-        function openPopout(popout: string): void {
+        function openPopout(popout: string, tool: string): void {
             const bar = [...Visibilities.bars.values()][0];
-            bar.openPopout(popout);
+            bar.openPopout(popout, tool);
         }
 
         function list(): string {

@@ -84,8 +84,9 @@ ColumnLayout {
         }
     }
 
-    function openPopout(popout: string) {
+    function openPopout(popout: string, tool: string) {
         popouts.currentName = popout;
+        popouts.currentTool = tool;
         for (const child of children) {
             if (child.id === popout) {
                 popouts.currentCenter = child.item.mapToItem(root, 0, child.item.implicitHeight / 2).y;

@@ -73,7 +73,7 @@ Item {
         Popout {
             name: "tools"
             sourceComponent: Tools {
-                currentIndex: shouldBeActive ? currentIndex : -1
+                currentIndex: root.wrapper.currentTool
             }
         }
 

@@ -24,6 +24,8 @@ Item {
     property real currentCenter
     property bool hasCurrent
 
+    property string currentTool
+
     property string detachedMode
     property string queuedMode
     readonly property bool isDetached: detachedMode.length > 0
