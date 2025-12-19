@@ -23,6 +23,35 @@ Item {
     readonly property string fromLanguageSelected: languageSelector.fromLang.selectedLanguage || dataModel.defaultFromLanguage
     readonly property string toLanguageSelected: languageSelector.toLang.selectedLanguage || dataModel.defaultToLanguage
 
+    property var focusableItems: [inputCard, languageSelector.fromLang, swapButton, languageSelector.toLang, translateButton, outputCard]
+    property int currentFocusIndex: 0
+
+    Keys.onPressed: function (event) {
+        // Ctrl+Enter o Enter (si no está en un TextArea): Traducir
+        if ((event.key === Qt.Key_Return || event.key === Qt.Key_Enter)) {
+            if (event.modifiers & Qt.ControlModifier || !inputCard.isTextAreaFocused()) {
+                event.accepted = true;
+                if (translateButton.enabled) {
+                    translationLogic.translateText();
+                }
+            }
+        } else
+
+        // Ctrl+S: Swap idiomas
+        if (event.key === Qt.Key_S && event.modifiers & Qt.ControlModifier) {
+            event.accepted = true;
+            translationLogic.swapLanguages();
+        } else
+
+        // Ctrl+F: Copiar traducción (si hay texto)
+        if (event.key === Qt.Key_F && event.modifiers & Qt.ControlModifier) {
+            if (outputCard.hasCopyableText()) {
+                event.accepted = true;
+                translationLogic.copyToClipboard();
+            }
+        }
+    }
+
     QtObject {
         id: dataModel
 
@@ -188,6 +217,11 @@ Item {
             onCopyClicked: translationLogic.copyToClipboard()
             onTextChanged: newText => {
                 outputText.text = newText;
+            }
+
+            function hasCopyableText() {
+                const text = outputText.text;
+                return text !== "" && text !== root.defaultOutputPlaceholder && !text.startsWith("Error:");
             }
 
             TextArea {
