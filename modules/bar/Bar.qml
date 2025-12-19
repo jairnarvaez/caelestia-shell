@@ -86,10 +86,8 @@ ColumnLayout {
 
     function openPopout(popout: string) {
         popouts.currentName = popout;
-
         for (const child of children) {
             if (child.id === popout) {
-                console.log(child.id);
                 popouts.currentCenter = child.item.mapToItem(root, 0, child.item.implicitHeight / 2).y;
                 popouts.hasCurrent = !popouts.hasCurrent;
                 visibilities.popouts = !visibilities.popouts;

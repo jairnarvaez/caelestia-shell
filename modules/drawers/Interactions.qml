@@ -214,7 +214,7 @@ CustomMouseArea {
         const showPopout = inLeftPanel(panels.popouts, x, y);
 
         if (!popotsShortcutActive) {
-            visibilities.popouts = false;
+            visibilities.popouts = showPopout;
         } else if (showPopout) {
             popotsShortcutActive = false;
         }
