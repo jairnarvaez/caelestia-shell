@@ -126,15 +126,42 @@ Item {
                 }
             }
 
-            StackLayout {
+            Loader {
                 anchors.fill: parent
                 anchors.margins: Appearance.padding.normal
-                currentIndex: root.currentIndex
+                asynchronous: true
 
-                TranslatePopout {}
-                ColorPicker {}
-                AI {}
-                YoutubeDowloader {}
+                sourceComponent: {
+                    switch (root.currentIndex) {
+                    case 0:
+                        return translateComponent;
+                    case 1:
+                        return colorPickerComponent;
+                    case 2:
+                        return aiComponent;
+                    case 3:
+                        return youtubeComponent;
+                    default:
+                        return null;
+                    }
+                }
+
+                Component {
+                    id: translateComponent
+                    TranslatePopout {}
+                }
+                Component {
+                    id: colorPickerComponent
+                    ColorPicker {}
+                }
+                Component {
+                    id: aiComponent
+                    AI {}
+                }
+                Component {
+                    id: youtubeComponent
+                    YoutubeDowloader {}
+                }
             }
         }
     }
