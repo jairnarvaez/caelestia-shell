@@ -80,10 +80,10 @@ CustomMouseArea {
 
             if (!popouts.currentName.startsWith("traymenu") || (popouts.current?.depth ?? 0) <= 1) {
                 console.log(popotsShortcutActive);
-                if (!popotsShortcutActive) {
-                    popouts.hasCurrent = false;
-                    bar.closeTray();
-                }
+                popouts.hasCurrent = false;
+                visibilities.popouts = false;
+                bar.closeTray();
+                // }
             }
 
             if (Config.bar.showOnHover)
@@ -214,12 +214,8 @@ CustomMouseArea {
         const showPopout = inLeftPanel(panels.popouts, x, y);
 
         if (!popotsShortcutActive) {
-            visibilities.popouts = showPopout;
+            visibilities.popouts = false;
         } else if (showPopout) {
-            popotsShortcutActive = true;
-        }
-
-        if (popotsShortcutActive && showPopout) {
             popotsShortcutActive = false;
         }
 
@@ -227,10 +223,7 @@ CustomMouseArea {
         if (x < bar.implicitWidth) {
             bar.checkPopout(y);
         } else if ((!popouts.currentName.startsWith("traymenu") || (popouts.current?.depth ?? 0) <= 1) && (!inLeftPanel(panels.popouts, x, y))) {
-            if (!popotsShortcutActive) {
-                popouts.hasCurrent = false;
-                bar.closeTray();
-            }
+            bar.closeTray();
         }
     }
 
@@ -244,6 +237,7 @@ CustomMouseArea {
                 root.dashboardShortcutActive = false;
                 root.osdShortcutActive = false;
                 root.utilitiesShortcutActive = false;
+                root.popotsShortcutActive = false;
 
                 // Also hide dashboard and OSD if they're not being hovered
                 const inDashboardArea = root.inTopPanel(root.panels.dashboard, root.mouseX, root.mouseY);
@@ -261,9 +255,7 @@ CustomMouseArea {
 
         function onPopoutsChanged() {
             if (root.visibilities.popouts) {
-                console.log("visibilities popouts true");
-
-                if (!root.inLeftPanel(root.panels.popouts, root.mouseX, root.mouseY) && root.mouseX > bar.implicitWidth) {
+                if (!root.inLeftPanel(root.panels.popouts, root.mouseX, root.mouseY)) {
                     console.log("Es un shortcut");
                     root.popotsShortcutActive = true;
                 }
@@ -277,6 +269,7 @@ CustomMouseArea {
             if (root.visibilities.dashboard) {
                 // Dashboard became visible, immediately check if this should be shortcut mode
                 const inDashboardArea = root.inTopPanel(root.panels.dashboard, root.mouseX, root.mouseY);
+
                 if (!inDashboardArea) {
                     root.dashboardShortcutActive = true;
                 }
