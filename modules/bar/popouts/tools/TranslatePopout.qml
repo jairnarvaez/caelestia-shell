@@ -20,8 +20,8 @@ Item {
 
     property bool showMenu: false
 
-    readonly property string fromLanguageSelected: languageSelector.fromLang.selectedLanguage || dataModel.defaultFromLanguage
-    readonly property string toLanguageSelected: languageSelector.toLang.selectedLanguage || dataModel.defaultToLanguage
+    readonly property string fromLanguageSelected: TranslationState.fromLanguageIndex
+    readonly property string toLanguageSelected: TranslationState.toLanguageIndex
 
     property var focusableItems: [inputCard, languageSelector.fromLang, swapButton, languageSelector.toLang, translateButton, outputCard]
     property int currentFocusIndex: 0
@@ -77,9 +77,6 @@ Item {
                 name: "Alemán"
             }
         ]
-
-        readonly property string defaultFromLanguage: languages[0].name
-        readonly property string defaultToLanguage: languages[1].name
 
         function getLanguageByCode(code) {
             return languages.find(lang => lang.code === code) || languages[0];
@@ -176,11 +173,11 @@ Item {
 
             onTextChanged: newText => {
                 inputText.text = translationLogic.validateInputLength(newText);
+                TranslationState.inputText = newText;
             }
 
             Component.onCompleted: {
-                // Acceder al TextArea interno del componente
-                // Necesitas exponer una forma de acceder a él
+                inputText.text = TranslationState.inputText;
                 inputCard.focusTextArea();
             }
 
@@ -217,6 +214,11 @@ Item {
             onCopyClicked: translationLogic.copyToClipboard()
             onTextChanged: newText => {
                 outputText.text = newText;
+                TranslationState.outputText = newText;
+            }
+
+            Component.onCompleted: {
+                outputText.text = TranslationState.outputText;
             }
 
             function hasCopyableText() {
@@ -273,7 +275,14 @@ Item {
             LanguageComboBox {
                 id: fromLang
                 Layout.fillWidth: true
-                selectedLanguageDefault: 0
+
+                Component.onCompleted: {
+                    currentIndex = TranslationState.fromLanguageIndex;
+                }
+
+                onCurrentIndexChanged: {
+                    TranslationState.fromLanguageIndex = currentIndex;
+                }
             }
 
             IconButton {
@@ -297,7 +306,14 @@ Item {
             LanguageComboBox {
                 id: toLang
                 Layout.fillWidth: true
-                selectedLanguageDefault: 1
+
+                Component.onCompleted: {
+                    currentIndex = TranslationState.toLanguageIndex;
+                }
+
+                onCurrentIndexChanged: {
+                    TranslationState.toLanguageIndex = currentIndex;
+                }
             }
         }
     }

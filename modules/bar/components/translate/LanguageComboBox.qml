@@ -13,8 +13,7 @@ Item {
     Layout.preferredHeight: comboButton.height
 
     property string selectedLanguage: ""
-    property int currentIndex: selectedLanguageDefault
-    required property int selectedLanguageDefault
+    property int currentIndex
 
     // Hacer focusable
     focus: true
@@ -29,7 +28,8 @@ Item {
     }
 
     function setLanguageByText(text) {
-        const index = _findIndexByText(text);
+        const index = findIndexByText(text);
+        console.log(index);
         if (index >= 0) {
             currentIndex = index;
             languageMenu.active = languageVariants.instances[index];
@@ -37,7 +37,7 @@ Item {
         }
     }
 
-    function _findIndexByText(text) {
+    function findIndexByText(text) {
         for (let i = 0; i < languageVariants.instances.length; i++) {
             if (languageVariants.instances[i].text === text) {
                 return i;
@@ -54,6 +54,10 @@ Item {
             }
         }
         return -1;
+    }
+
+    function selectLanguageAtIndex(index) {
+        _selectLanguageAtIndex(index);
     }
 
     // NUEVO: Seleccionar idioma por índice
@@ -220,7 +224,7 @@ Item {
         anchors.topMargin: Appearance.spacing.small
         width: comboButton.width
         items: languageVariants.instances
-        active: languageVariants.instances[selectedLanguageDefault] ?? null
+        active: languageVariants.instances[currentIndex] ?? null
         expanded: root.showMenu
 
         onItemSelected: item => {
