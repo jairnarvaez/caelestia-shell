@@ -20,119 +20,56 @@ Rectangle {
         spacing: 0
 
         // Header
-        Rectangle {
-            Layout.fillWidth: true
-            Layout.preferredHeight: 72
-            color: Colours.tPalette.m3surfaceContainer
-            radius: 28
+        RowLayout {
+            spacing: Appearance.spacing.normal
 
-            Rectangle {
-                anchors.fill: parent
-                anchors.topMargin: 0
-                anchors.bottomMargin: -28
-                color: parent.color
-                radius: parent.radius
+            StyledRect {
+                implicitWidth: implicitHeight
+                implicitHeight: headerIcon.implicitHeight + Appearance.padding.large
+                radius: Appearance.rounding.full
+                color: Colours.palette.m3secondaryContainer
+
+                MaterialIcon {
+                    id: headerIcon
+                    anchors.centerIn: parent
+                    text: "psychology"
+                    color: Colours.palette.m3onSecondaryContainer
+                    font.pointSize: Appearance.font.size.large
+                }
             }
 
-            RowLayout {
-                anchors.fill: parent
-                anchors.margins: 20
-                spacing: 12
+            Text {
+                text: "Asistente IA"
+                font.pointSize: Appearance.font.size.normal
+                font.weight: Font.Medium
+                color: Colours.tPalette.m3onSurface
+                Layout.fillWidth: true
+            }
 
-                Rectangle {
-                    width: 44
-                    height: 44
-                    radius: 22
+            Rectangle {
+                width: 36
+                height: 36
+                radius: 18
+                color: optionsArea.containsMouse ? Colours.tPalette.m3surfaceContainerHighest : "transparent"
 
-                    gradient: Gradient {
-                        GradientStop {
-                            position: 0.0
-                            color: Colours.tPalette.m3primary
-                        }
-                        GradientStop {
-                            position: 1.0
-                            color: Colours.tPalette.m3tertiary
-                        }
-                    }
-
-                    MaterialIcon {
-                        anchors.centerIn: parent
-                        text: "psychology"
-                        font.pointSize: 20
-                        color: "white"
+                Behavior on color {
+                    ColorAnimation {
+                        duration: 150
                     }
                 }
 
-                ColumnLayout {
-                    Layout.fillWidth: true
-                    spacing: 2
-
-                    Text {
-                        text: "Asistente IA"
-                        font.pointSize: Appearance.font.size.medium
-                        font.weight: Font.DemiBold
-                        color: Colours.tPalette.m3onSurface
-                    }
-
-                    RowLayout {
-                        spacing: 6
-
-                        Rectangle {
-                            width: 8
-                            height: 8
-                            radius: 4
-                            color: Colours.tPalette.m3success
-
-                            SequentialAnimation on opacity {
-                                loops: Animation.Infinite
-                                running: true
-                                NumberAnimation {
-                                    from: 1.0
-                                    to: 0.3
-                                    duration: 800
-                                }
-                                NumberAnimation {
-                                    from: 0.3
-                                    to: 1.0
-                                    duration: 800
-                                }
-                            }
-                        }
-
-                        Text {
-                            text: "En línea"
-                            font.pointSize: Appearance.font.size.small
-                            color: Colours.tPalette.m3onSurfaceVariant
-                        }
-                    }
+                MaterialIcon {
+                    anchors.centerIn: parent
+                    text: "more_vert"
+                    font.pointSize: 18
+                    color: Colours.tPalette.m3onSurfaceVariant
                 }
 
-                // Options button
-                Rectangle {
-                    width: 36
-                    height: 36
-                    radius: 18
-                    color: optionsArea.containsMouse ? Colours.tPalette.m3surfaceContainerHighest : "transparent"
-
-                    Behavior on color {
-                        ColorAnimation {
-                            duration: 150
-                        }
-                    }
-
-                    MaterialIcon {
-                        anchors.centerIn: parent
-                        text: "more_vert"
-                        font.pointSize: 18
-                        color: Colours.tPalette.m3onSurfaceVariant
-                    }
-
-                    MouseArea {
-                        id: optionsArea
-                        anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
-                        hoverEnabled: true
-                    }
+                MouseArea {
+                    id: optionsArea
+                    anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
+                    hoverEnabled: true
                 }
             }
         }
@@ -145,13 +82,13 @@ Rectangle {
 
             ScrollView {
                 anchors.fill: parent
-                anchors.margins: 20
+                anchors.margins: 5
                 anchors.bottomMargin: 12
                 clip: true
 
                 ListView {
                     id: chatView
-                    spacing: 16
+                    spacing: 5
                     verticalLayoutDirection: ListView.BottomToTop
 
                     model: ListModel {
@@ -176,38 +113,11 @@ Rectangle {
                         RowLayout {
                             id: messageContainer
                             width: parent.width
-                            spacing: 12
+                            spacing: 5
 
                             Item {
                                 Layout.preferredWidth: isUser ? parent.width * 0.15 : 0
                                 Layout.preferredHeight: 1
-                            }
-
-                            // AI Avatar (only for AI messages)
-                            Rectangle {
-                                visible: !isUser
-                                Layout.preferredWidth: 32
-                                Layout.preferredHeight: 32
-                                Layout.alignment: Qt.AlignTop
-                                radius: 16
-
-                                gradient: Gradient {
-                                    GradientStop {
-                                        position: 0.0
-                                        color: Colours.tPalette.m3primary
-                                    }
-                                    GradientStop {
-                                        position: 1.0
-                                        color: Colours.tPalette.m3tertiary
-                                    }
-                                }
-
-                                MaterialIcon {
-                                    anchors.centerIn: parent
-                                    text: "auto_awesome"
-                                    font.pointSize: 14
-                                    color: "white"
-                                }
                             }
 
                             // Message Bubble
@@ -262,7 +172,7 @@ Rectangle {
                                         text: message
                                         wrapMode: Text.Wrap
                                         color: isUser ? Colours.tPalette.m3onPrimaryContainer : Colours.tPalette.m3onSurface
-                                        font.pointSize: Appearance.font.size.normal
+                                        font.pointSize: Appearance.font.size.small
                                         lineHeight: 1.4
                                     }
                                 }
@@ -273,23 +183,6 @@ Rectangle {
                                     font.pointSize: Appearance.font.size.tiny
                                     color: Colours.tPalette.m3onSurfaceVariant
                                     opacity: 0.7
-                                }
-                            }
-
-                            // User Avatar (only for user messages)
-                            Rectangle {
-                                visible: isUser
-                                Layout.preferredWidth: 32
-                                Layout.preferredHeight: 32
-                                Layout.alignment: Qt.AlignTop
-                                radius: 16
-                                color: Colours.tPalette.m3secondaryContainer
-
-                                MaterialIcon {
-                                    anchors.centerIn: parent
-                                    text: "person"
-                                    font.pointSize: 16
-                                    color: Colours.tPalette.m3onSecondaryContainer
                                 }
                             }
 
@@ -377,13 +270,13 @@ Rectangle {
             color: Colours.tPalette.m3surfaceContainer
             radius: 28
 
-            Rectangle {
-                anchors.fill: parent
-                anchors.topMargin: -28
-                anchors.bottomMargin: 0
-                color: parent.color
-                radius: parent.radius
-            }
+            // Rectangle {
+            //     anchors.fill: parent
+            //     anchors.topMargin: -28
+            //     anchors.bottomMargin: 0
+            //     color: parent.color
+            //     radius: parent.radius
+            // }
 
             RowLayout {
                 anchors.fill: parent
@@ -548,7 +441,7 @@ Rectangle {
             chatModel.insert(0, {
                 message: responses[Math.floor(Math.random() * responses.length)],
                 isUser: false,
-                timestamp: "Ahora"
+                timestamp: ""
             });
         }
     }
@@ -561,7 +454,7 @@ Rectangle {
         chatModel.insert(0, {
             message: userMsg,
             isUser: true,
-            timestamp: "Ahora"
+            timestamp: ""
         });
 
         chatInput.text = "";

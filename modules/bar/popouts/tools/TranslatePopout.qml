@@ -57,12 +57,12 @@ Item {
 
         readonly property var languages: [
             {
-                code: "es",
-                name: "Español"
-            },
-            {
                 code: "en",
                 name: "Inglés"
+            },
+            {
+                code: "es",
+                name: "Español"
             },
             {
                 code: "fr",
