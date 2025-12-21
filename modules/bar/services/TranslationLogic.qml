@@ -26,6 +26,10 @@ QtObject {
         const tempLanguage = root.fromLanguageSelected;
         languageSelector.fromLang.selectLanguageAtIndex(root.toLanguageSelected);
         languageSelector.toLang.selectLanguageAtIndex(tempLanguage);
+
+        const text = inputText.text;
+        inputText.text = outputText.text;
+        outputText.text = text;
     }
 
     function translateText() {
