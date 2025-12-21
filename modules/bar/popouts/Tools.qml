@@ -25,11 +25,6 @@ Item {
             component: "Translate.qml"
         },
         {
-            icon: "colorize",
-            name: "Color Picker",
-            component: "ColorPicker.qml"
-        },
-        {
             icon: "robot",
             name: "Chat IA",
             component: "AI.qml"
@@ -38,6 +33,11 @@ Item {
             icon: "youtube_activity",
             name: "Youtube Downloader",
             component: "YoutubeDowloader.qml"
+        },
+        {
+            icon: "colorize",
+            name: "Color Picker",
+            component: "ColorPicker.qml"
         }
     ]
 
@@ -135,11 +135,11 @@ Item {
                     switch (root.currentIndex) {
                     case 0:
                         return translateComponent;
-                    case 1:
-                        return colorPickerComponent;
-                    case 2:
-                        return aiComponent;
                     case 3:
+                        return colorPickerComponent;
+                    case 1:
+                        return aiComponent;
+                    case 2:
                         return youtubeComponent;
                     default:
                         return null;
