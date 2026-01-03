@@ -122,8 +122,14 @@ Singleton {
         function stop(): void {
             root.active?.stop();
         }
+
         function raise(): void {
             root.active?.raise();
+        }
+
+        function position(offset: real): void {
+            if (active?.canSeek && active?.positionSupported)
+                root.active.position = offset * root.active.length;
         }
     }
 }

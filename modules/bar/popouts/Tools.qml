@@ -111,7 +111,7 @@ Item {
         // Panel de contenido
         Rectangle {
             Layout.preferredWidth: 350
-            Layout.preferredHeight: 450
+            Layout.preferredHeight: 650
             radius: 12
             color: Colours.palette.m3surface
             border.color: Colours.palette.m3outlineVariant
