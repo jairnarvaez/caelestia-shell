@@ -38,8 +38,8 @@ Item {
         if (mode === "winfo") {
             detachedMode = mode;
         } else {
-            detachedMode = "any";
             queuedMode = mode;
+            detachedMode = "any";
         }
         focus = true;
     }
@@ -105,7 +105,6 @@ Item {
         id: content
 
         shouldBeActive: root.hasCurrent && !root.detachedMode
-        asynchronous: true
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
 
@@ -116,7 +115,6 @@ Item {
 
     Comp {
         shouldBeActive: root.detachedMode === "winfo"
-        asynchronous: true
         anchors.centerIn: parent
 
         sourceComponent: WindowInfo {
@@ -127,7 +125,6 @@ Item {
 
     Comp {
         shouldBeActive: root.detachedMode === "any"
-        asynchronous: true
         anchors.centerIn: parent
 
         sourceComponent: ControlCenter {
@@ -177,7 +174,6 @@ Item {
 
         property bool shouldBeActive
 
-        asynchronous: true
         active: false
         opacity: 0
 
